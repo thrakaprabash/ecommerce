@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ShoppingCart, User, Search, Menu, X, Star, Heart, ArrowLeft, Trash2, Plus, Settings, LogOut, Package, Loader, Save, Edit, ChevronRight, Upload, Camera, Truck, CreditCard, CheckCircle, List, Filter } from 'lucide-react';
 
-// Use 127.0.0.1 to prevent localhost IPv6 lookup delays (often causes 1s+ or 1m+ timeouts)
+// Use 127.0.0.1 to prevent localhost IPv6 lookup delays
 const API_URL = 'http://127.0.0.1:5000/api';
 
 // ==========================================
@@ -18,13 +18,13 @@ const Pagination = ({ itemsPerPage, totalItems, paginate, currentPage }) => {
   if (pageNumbers.length <= 1) return null;
 
   return (
-    <nav className="flex justify-center mt-8">
+    <nav className="flex justify-center mt-8 overflow-x-auto py-2">
       <ul className="flex space-x-2">
         {pageNumbers.map(number => (
           <li key={number}>
             <button
               onClick={() => paginate(number)}
-              className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+              className={`px-3 py-1 sm:px-4 sm:py-2 text-sm font-medium rounded-md transition-colors ${
                 currentPage === number 
                   ? 'bg-red-600 text-white border border-red-600' 
                   : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
@@ -56,11 +56,11 @@ const Navbar = React.memo(({ user, cartCount, setCurrentPage, handleLogout, isMe
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
-          <div className="flex items-center cursor-pointer" onClick={() => { handleSearch(''); setCurrentPage('home'); }}>
+          <div className="flex items-center cursor-pointer flex-shrink-0" onClick={() => { handleSearch(''); setCurrentPage('home'); }}>
               <img 
                 src="https://placehold.co/150x50/ffffff/dc2626?text=PABA&font=montserrat" 
                 alt="PABA Logo" 
-                className="h-10 w-auto object-contain"
+                className="h-8 sm:h-10 w-auto object-contain"
               />
           </div>
 
@@ -72,7 +72,7 @@ const Navbar = React.memo(({ user, cartCount, setCurrentPage, handleLogout, isMe
                 placeholder="Search products..."
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
-                className="w-full bg-gray-100 rounded-full py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all"
+                className="w-full bg-gray-100 rounded-full py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all text-sm"
               />
               <button type="submit" className="absolute left-3 top-2.5 text-gray-400 hover:text-red-600 transition-colors">
                 <Search className="h-5 w-5" />
@@ -106,7 +106,6 @@ const Navbar = React.memo(({ user, cartCount, setCurrentPage, handleLogout, isMe
                   onClick={() => setCurrentPage('profile')}
                   className="flex items-center text-gray-700 hover:text-red-600 font-medium transition-colors"
                 >
-                  {/* Profile Picture in Navbar */}
                   {user.image ? (
                     <img 
                       src={user.image} 
@@ -169,7 +168,7 @@ const Navbar = React.memo(({ user, cartCount, setCurrentPage, handleLogout, isMe
             <form onSubmit={(e) => { submitSearch(e); setIsMenuOpen(false); }}>
                 <input
                 type="text"
-                placeholder="Search..."
+                placeholder="Search products..."
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 className="w-full bg-gray-100 rounded mb-4 py-2 px-4 focus:outline-none"
@@ -238,7 +237,7 @@ const CartPage = ({ cart, removeFromCart, checkoutHandler, setCurrentPage }) => 
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-3xl font-extrabold text-gray-900 mb-8">Shopping Cart</h1>
+      <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-8">Shopping Cart</h1>
       
       {cart.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 bg-white rounded-xl shadow-sm border border-gray-100">
@@ -264,7 +263,7 @@ const CartPage = ({ cart, removeFromCart, checkoutHandler, setCurrentPage }) => 
                       src={item.image || 'https://via.placeholder.com/150'} 
                       alt={item.name} 
                       loading="lazy"
-                      onError={(e) => { e.target.onerror=null; e.target.src='https://via.placeholder.com/150?text=No+Image'; }}
+                      onError={(e) => {e.target.src='https://via.placeholder.com/150?text=No+Image'; }}
                       className="w-full h-full object-contain p-2" 
                     />
                 </div>
@@ -352,14 +351,14 @@ const ShippingAddressPage = ({ shippingAddress, saveShippingAddress, setCurrentP
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="max-w-2xl mx-auto">
         {/* Progress Bar */}
-        <div className="flex items-center justify-center mb-8 space-x-4 text-sm font-medium">
-            <span className="flex items-center text-red-600"><CheckCircle className="h-5 w-5 mr-2" /> Cart</span>
-            <span className="h-px w-10 bg-red-600"></span>
-            <span className="flex items-center text-red-600"><Truck className="h-5 w-5 mr-2" /> Shipping</span>
-            <span className="h-px w-10 bg-gray-300"></span>
-            <span className="flex items-center text-gray-400"><CreditCard className="h-5 w-5 mr-2" /> Payment</span>
-            <span className="h-px w-10 bg-gray-300"></span>
-            <span className="flex items-center text-gray-400"><CheckCircle className="h-5 w-5 mr-2" /> Confirm</span>
+        <div className="flex items-center justify-center mb-8 space-x-2 sm:space-x-4 text-xs sm:text-sm font-medium overflow-x-auto whitespace-nowrap">
+            <span className="flex items-center text-red-600"><CheckCircle className="h-5 w-5 mr-1 sm:mr-2" /> Cart</span>
+            <span className="h-px w-6 sm:w-10 bg-red-600"></span>
+            <span className="flex items-center text-red-600"><Truck className="h-5 w-5 mr-1 sm:mr-2" /> Shipping</span>
+            <span className="h-px w-6 sm:w-10 bg-gray-300"></span>
+            <span className="flex items-center text-gray-400"><CreditCard className="h-5 w-5 mr-1 sm:mr-2" /> Payment</span>
+            <span className="h-px w-6 sm:w-10 bg-gray-300"></span>
+            <span className="flex items-center text-gray-400"><CheckCircle className="h-5 w-5 mr-1 sm:mr-2" /> Confirm</span>
         </div>
 
         <button onClick={() => setCurrentPage('cart')} className="flex items-center text-gray-600 hover:text-red-600 mb-8 transition-colors">
@@ -368,7 +367,7 @@ const ShippingAddressPage = ({ shippingAddress, saveShippingAddress, setCurrentP
 
         <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
           <div className="bg-gray-900 px-8 py-6">
-            <h2 className="text-2xl font-bold text-white">Shipping Address</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-white">Shipping Address</h2>
           </div>
           
           <form onSubmit={submitHandler} className="p-8 space-y-6">
@@ -384,7 +383,7 @@ const ShippingAddressPage = ({ shippingAddress, saveShippingAddress, setCurrentP
               />
             </div>
             
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
                 <input
@@ -445,14 +444,14 @@ const PaymentPage = ({ savePaymentMethod, setCurrentPage }) => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="max-w-2xl mx-auto">
-        <div className="flex items-center justify-center mb-8 space-x-4 text-sm font-medium">
-            <span className="flex items-center text-red-600"><CheckCircle className="h-5 w-5 mr-2" /> Cart</span>
-            <span className="h-px w-10 bg-red-600"></span>
-            <span className="flex items-center text-red-600"><Truck className="h-5 w-5 mr-2" /> Shipping</span>
-            <span className="h-px w-10 bg-red-600"></span>
-            <span className="flex items-center text-red-600"><CreditCard className="h-5 w-5 mr-2" /> Payment</span>
-            <span className="h-px w-10 bg-gray-300"></span>
-            <span className="flex items-center text-gray-400"><CheckCircle className="h-5 w-5 mr-2" /> Confirm</span>
+        <div className="flex items-center justify-center mb-8 space-x-2 sm:space-x-4 text-xs sm:text-sm font-medium overflow-x-auto whitespace-nowrap">
+            <span className="flex items-center text-red-600"><CheckCircle className="h-5 w-5 mr-1 sm:mr-2" /> Cart</span>
+            <span className="h-px w-6 sm:w-10 bg-red-600"></span>
+            <span className="flex items-center text-red-600"><Truck className="h-5 w-5 mr-1 sm:mr-2" /> Shipping</span>
+            <span className="h-px w-6 sm:w-10 bg-red-600"></span>
+            <span className="flex items-center text-red-600"><CreditCard className="h-5 w-5 mr-1 sm:mr-2" /> Payment</span>
+            <span className="h-px w-6 sm:w-10 bg-gray-300"></span>
+            <span className="flex items-center text-gray-400"><CheckCircle className="h-5 w-5 mr-1 sm:mr-2" /> Confirm</span>
         </div>
 
         <button onClick={() => setCurrentPage('shipping')} className="flex items-center text-gray-600 hover:text-red-600 mb-8 transition-colors">
@@ -482,7 +481,6 @@ const PaymentPage = ({ savePaymentMethod, setCurrentPage }) => {
                     Stripe / Credit Card
                   </label>
                 </div>
-                {/* Add more methods like PayPal here if needed */}
               </div>
             </div>
 
@@ -532,14 +530,14 @@ const PlaceOrderPage = ({ cart, shippingAddress, paymentMethod, placeOrderHandle
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-       <div className="flex items-center justify-center mb-8 space-x-4 text-sm font-medium">
-            <span className="flex items-center text-red-600"><CheckCircle className="h-5 w-5 mr-2" /> Cart</span>
-            <span className="h-px w-10 bg-red-600"></span>
-            <span className="flex items-center text-red-600"><Truck className="h-5 w-5 mr-2" /> Shipping</span>
-            <span className="h-px w-10 bg-red-600"></span>
-            <span className="flex items-center text-red-600"><CreditCard className="h-5 w-5 mr-2" /> Payment</span>
-            <span className="h-px w-10 bg-red-600"></span>
-            <span className="flex items-center text-red-600"><CheckCircle className="h-5 w-5 mr-2" /> Confirm</span>
+       <div className="flex items-center justify-center mb-8 space-x-2 sm:space-x-4 text-xs sm:text-sm font-medium overflow-x-auto whitespace-nowrap">
+            <span className="flex items-center text-red-600"><CheckCircle className="h-5 w-5 mr-1 sm:mr-2" /> Cart</span>
+            <span className="h-px w-6 sm:w-10 bg-red-600"></span>
+            <span className="flex items-center text-red-600"><Truck className="h-5 w-5 mr-1 sm:mr-2" /> Shipping</span>
+            <span className="h-px w-6 sm:w-10 bg-red-600"></span>
+            <span className="flex items-center text-red-600"><CreditCard className="h-5 w-5 mr-1 sm:mr-2" /> Payment</span>
+            <span className="h-px w-6 sm:w-10 bg-red-600"></span>
+            <span className="flex items-center text-red-600"><CheckCircle className="h-5 w-5 mr-1 sm:mr-2" /> Confirm</span>
         </div>
 
       <div className="flex flex-col lg:flex-row gap-12">
@@ -619,13 +617,13 @@ const OrderDetailsPage = ({ order, handlePay, setCurrentPage, loading }) => {
             <ArrowLeft className="h-5 w-5 mr-2" /> Back to My Orders
         </button>
 
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Order #{order._id.substring(0,8)}</h1>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Order #{order._id.substring(0,8)}</h1>
         <span className="text-gray-500 text-sm">Placed on {order.createdAt?.substring(0,10)}</span>
       </div>
 
       {/* Progress Bar (Tracking) */}
-        <div className="bg-white p-8 rounded-xl border border-gray-100 shadow-sm mb-8">
+        <div className="bg-white p-6 sm:p-8 rounded-xl border border-gray-100 shadow-sm mb-8">
             <h2 className="text-lg font-bold text-gray-900 mb-6">Order Status</h2>
             <div className="relative">
                 <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -translate-y-1/2 rounded-full"></div>
@@ -636,22 +634,22 @@ const OrderDetailsPage = ({ order, handlePay, setCurrentPage, loading }) => {
                 
                 <div className="relative flex justify-between">
                     <div className="flex flex-col items-center">
-                        <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white z-10">
+                        <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white z-10 shadow-sm">
                             <CheckCircle className="h-5 w-5" />
                         </div>
-                        <span className="text-sm font-medium mt-2 text-green-700">Placed</span>
+                        <span className="text-xs sm:text-sm font-medium mt-2 text-green-700">Placed</span>
                     </div>
                     <div className="flex flex-col items-center">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center z-10 ${order.isPaid ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-400'}`}>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center z-10 shadow-sm ${order.isPaid ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-400'}`}>
                             <CreditCard className="h-5 w-5" />
                         </div>
-                        <span className={`text-sm font-medium mt-2 ${order.isPaid ? 'text-green-700' : 'text-gray-500'}`}>Paid</span>
+                        <span className={`text-xs sm:text-sm font-medium mt-2 ${order.isPaid ? 'text-green-700' : 'text-gray-500'}`}>Paid</span>
                     </div>
                     <div className="flex flex-col items-center">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center z-10 ${order.isDelivered ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-400'}`}>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center z-10 shadow-sm ${order.isDelivered ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-400'}`}>
                             <Truck className="h-5 w-5" />
                         </div>
-                        <span className={`text-sm font-medium mt-2 ${order.isDelivered ? 'text-green-700' : 'text-gray-500'}`}>Delivered</span>
+                        <span className={`text-xs sm:text-sm font-medium mt-2 ${order.isDelivered ? 'text-green-700' : 'text-gray-500'}`}>Delivered</span>
                     </div>
                 </div>
             </div>
@@ -662,22 +660,22 @@ const OrderDetailsPage = ({ order, handlePay, setCurrentPage, loading }) => {
            {/* Shipping Status */}
            <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Shipping</h2>
-            <p className="mb-4"><span className="font-semibold">Address:</span> {order.shippingAddress.address}, {order.shippingAddress.city}, {order.shippingAddress.postalCode}, {order.shippingAddress.country}</p>
+            <p className="mb-4 text-sm sm:text-base"><span className="font-semibold">Address:</span> {order.shippingAddress.address}, {order.shippingAddress.city}, {order.shippingAddress.postalCode}, {order.shippingAddress.country}</p>
             {order.isDelivered ? (
-                <div className="bg-green-100 text-green-800 p-3 rounded-lg font-medium">Delivered at {order.deliveredAt?.substring(0, 10)}</div>
+                <div className="bg-green-100 text-green-800 p-3 rounded-lg font-medium text-sm sm:text-base">Delivered at {order.deliveredAt?.substring(0, 10)}</div>
             ) : (
-                <div className="bg-yellow-100 text-yellow-800 p-3 rounded-lg font-medium">Not Delivered</div>
+                <div className="bg-yellow-100 text-yellow-800 p-3 rounded-lg font-medium text-sm sm:text-base">Not Delivered</div>
             )}
           </div>
 
           {/* Payment Status */}
           <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Payment Method</h2>
-            <p className="mb-4"><span className="font-semibold">Method:</span> {order.paymentMethod}</p>
+            <p className="mb-4 text-sm sm:text-base"><span className="font-semibold">Method:</span> {order.paymentMethod}</p>
             {order.isPaid ? (
-                <div className="bg-green-100 text-green-800 p-3 rounded-lg font-medium">Paid on {order.paidAt?.substring(0, 10)}</div>
+                <div className="bg-green-100 text-green-800 p-3 rounded-lg font-medium text-sm sm:text-base">Paid on {order.paidAt?.substring(0, 10)}</div>
             ) : (
-                <div className="bg-red-100 text-red-800 p-3 rounded-lg font-medium">Not Paid</div>
+                <div className="bg-red-100 text-red-800 p-3 rounded-lg font-medium text-sm sm:text-base">Not Paid</div>
             )}
           </div>
 
@@ -688,10 +686,10 @@ const OrderDetailsPage = ({ order, handlePay, setCurrentPage, loading }) => {
                 {order.orderItems.map((item, index) => (
                   <div key={index} className="flex items-center justify-between border-b border-gray-50 pb-2 last:border-0">
                     <div className="flex items-center">
-                      <img src={item.image} alt={item.name} className="h-12 w-12 object-cover rounded-md mr-4" />
-                      <span className="text-gray-800">{item.name}</span>
+                      <img src={item.image} alt={item.name} className="h-10 w-10 sm:h-12 sm:w-12 object-cover rounded-md mr-4" />
+                      <span className="text-gray-800 text-sm sm:text-base">{item.name}</span>
                     </div>
-                    <div className="text-gray-600 font-medium">
+                    <div className="text-gray-600 font-medium text-sm sm:text-base">
                       {item.qty} x ${item.price} = ${(item.qty * item.price).toFixed(2)}
                     </div>
                   </div>
@@ -789,7 +787,7 @@ const MyOrdersPage = ({ user, setCurrentPage, handleOrderClick }) => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h2 className="text-3xl font-bold text-gray-900 mb-8">My Orders</h2>
+      <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">My Orders</h2>
       {loading ? (
         <div className="flex justify-center py-20"><Loader className="animate-spin h-10 w-10 text-red-600" /></div>
       ) : error ? (
@@ -798,65 +796,67 @@ const MyOrdersPage = ({ user, setCurrentPage, handleOrderClick }) => {
         <div className="text-gray-500">You have no orders.</div>
       ) : (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paid</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delivered</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {orders.map((order) => (
-                <tr key={order._id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{order._id.substring(0,8)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.createdAt.substring(0, 10)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${order.totalPrice}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    {order.isPaid ? (
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                        Paid
-                      </span>
-                    ) : (
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                        Not Paid
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    {order.isDelivered ? (
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                        Delivered
-                      </span>
-                    ) : (
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                        Processing
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
-                     <button 
-                      onClick={() => handleOrderClick(order._id)}
-                      className="text-blue-600 hover:text-blue-900"
-                    >
-                      Track
-                    </button>
-                    {!order.isPaid && (
-                        <button 
-                        onClick={() => cancelOrderHandler(order._id)}
-                        className="text-red-600 hover:text-red-900"
-                        >
-                        Cancel
-                        </button>
-                    )}
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paid</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delivered</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                {orders.map((order) => (
+                    <tr key={order._id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{order._id.substring(0,8)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.createdAt.substring(0, 10)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${order.totalPrice}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        {order.isPaid ? (
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            Paid {order.paidAt.substring(0, 10)}
+                        </span>
+                        ) : (
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                            Not Paid
+                        </span>
+                        )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        {order.isDelivered ? (
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            Delivered
+                        </span>
+                        ) : (
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                            Processing
+                        </span>
+                        )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                        <button 
+                        onClick={() => handleOrderClick(order._id)}
+                        className="text-blue-600 hover:text-blue-900"
+                        >
+                        Track
+                        </button>
+                        {!order.isPaid && (
+                            <button 
+                            onClick={() => cancelOrderHandler(order._id)}
+                            className="text-red-600 hover:text-red-900"
+                            >
+                            Cancel
+                            </button>
+                        )}
+                    </td>
+                    </tr>
+                ))}
+                </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>
