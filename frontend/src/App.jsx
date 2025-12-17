@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ShoppingCart, User, Search, Menu, X, Star, Heart, ArrowLeft, Trash2, Plus, Settings, LogOut, Package, Loader, Save, Edit, ChevronRight, Upload, Camera, Truck, CreditCard, CheckCircle, List, Filter } from 'lucide-react';
 
-const API_URL = 'http://localhost:5000/api';
+// Use 127.0.0.1 to prevent localhost IPv6 lookup delays (often causes 1s+ or 1m+ timeouts)
+const API_URL = 'http://127.0.0.1:5000/api';
 
 // ==========================================
 // SECTION: UTILITY COMPONENTS
@@ -501,7 +502,7 @@ const PaymentPage = ({ savePaymentMethod, setCurrentPage }) => {
   );
 };
 
-const PlaceOrderPage = ({ cart, shippingAddress, paymentMethod, placeOrderHandler, setCurrentPage }) => {
+const PlaceOrderPage = ({ cart, shippingAddress, paymentMethod, placeOrderHandler, setCurrentPage, loading }) => {
   // Calculate Prices
   const itemsPrice = cart.reduce((acc, item) => acc + item.price * item.qty, 0);
   const shippingPrice = itemsPrice > 100 ? 0 : 10; // Free shipping over $100
@@ -597,10 +598,10 @@ const PlaceOrderPage = ({ cart, shippingAddress, paymentMethod, placeOrderHandle
             </div>
             <button 
               onClick={handlePlaceOrder}
-              disabled={cart.length === 0}
-              className="w-full mt-8 bg-red-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-red-700 transition-all shadow-lg shadow-red-200 disabled:opacity-50"
+              disabled={cart.length === 0 || loading}
+              className="w-full mt-8 bg-red-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-red-700 transition-all shadow-lg shadow-red-200 disabled:opacity-50 flex justify-center items-center"
             >
-              Place Order
+              {loading ? <Loader className="animate-spin h-6 w-6" /> : "Place Order"}
             </button>
           </div>
         </div>
@@ -609,7 +610,7 @@ const PlaceOrderPage = ({ cart, shippingAddress, paymentMethod, placeOrderHandle
   );
 };
 
-const OrderDetailsPage = ({ order, handlePay, setCurrentPage }) => {
+const OrderDetailsPage = ({ order, handlePay, setCurrentPage, loading }) => {
   if (!order) return <div className="p-12 text-center">Loading Order...</div>;
 
   return (
@@ -716,10 +717,11 @@ const OrderDetailsPage = ({ order, handlePay, setCurrentPage }) => {
                 <div className="mt-8">
                     <button 
                         onClick={() => handlePay(order._id)}
-                        className="w-full bg-gray-900 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-600 transition-all shadow-lg hover:shadow-green-200 flex items-center justify-center"
+                        disabled={loading}
+                        className="w-full bg-gray-900 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-600 transition-all shadow-lg hover:shadow-green-200 flex items-center justify-center disabled:opacity-50"
                     >
-                        <CreditCard className="h-5 w-5 mr-2" />
-                        Pay Now (Demo Stripe)
+                        {loading ? <Loader className="animate-spin h-6 w-6 mr-2" /> : <CreditCard className="h-5 w-5 mr-2" />}
+                        {loading ? 'Processing...' : 'Pay Now (Demo Stripe)'}
                     </button>
                     <p className="text-xs text-gray-400 text-center mt-3">Click to simulate a successful Stripe payment.</p>
                 </div>
@@ -865,7 +867,7 @@ const MyOrdersPage = ({ user, setCurrentPage, handleOrderClick }) => {
 // SECTION: USER PROFILE COMPONENTS
 // ==========================================
 
-const ProfilePage = ({ user, handleUpdateProfile, setCurrentPage }) => {
+const ProfilePage = ({ user, handleUpdateProfile, setCurrentPage, loading }) => {
   const [name, setName] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
   const [password, setPassword] = useState('');
@@ -989,10 +991,11 @@ const ProfilePage = ({ user, handleUpdateProfile, setCurrentPage }) => {
               <div className="flex justify-end pt-4">
                 <button
                   type="submit"
-                  className="flex items-center px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors shadow-lg shadow-red-200"
+                  disabled={loading}
+                  className="flex items-center px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors shadow-lg shadow-red-200 disabled:opacity-50"
                 >
-                  <Save className="h-5 w-5 mr-2" />
-                  Update Profile
+                  {loading ? <Loader className="animate-spin h-5 w-5 mr-2" /> : <Save className="h-5 w-5 mr-2" />}
+                  {loading ? 'Updating...' : 'Update Profile'}
                 </button>
               </div>
             </form>
@@ -1666,7 +1669,7 @@ const ProductList = React.memo(({ products, loading, error, handleProductClick, 
   );
 });
 
-const LoginPage = ({ handleLogin, setCurrentPage }) => {
+const LoginPage = ({ handleLogin, setCurrentPage, loading }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -1703,8 +1706,8 @@ const LoginPage = ({ handleLogin, setCurrentPage }) => {
             </div>
           </div>
           <div>
-            <button type="submit" className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all">
-              Sign in
+            <button type="submit" disabled={loading} className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all disabled:opacity-50">
+              {loading ? <Loader className="animate-spin h-5 w-5 mx-auto" /> : 'Sign in'}
             </button>
           </div>
         </form>
@@ -1713,7 +1716,7 @@ const LoginPage = ({ handleLogin, setCurrentPage }) => {
   );
 };
 
-const SignupPage = ({ handleRegister, setCurrentPage }) => {
+const SignupPage = ({ handleRegister, setCurrentPage, loading }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -1761,8 +1764,8 @@ const SignupPage = ({ handleRegister, setCurrentPage }) => {
             </div>
           </div>
           <div>
-            <button type="submit" className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all">
-              Sign Up
+            <button type="submit" disabled={loading} className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all disabled:opacity-50">
+              {loading ? <Loader className="animate-spin h-5 w-5 mx-auto" /> : 'Sign Up'}
             </button>
           </div>
         </form>
@@ -1932,6 +1935,7 @@ const App = () => {
   const [wishlist, setWishlist] = useState([]); 
   const [keyword, setKeyword] = useState('');
   const [sortOption, setSortOption] = useState('latest');
+  const [actionLoading, setActionLoading] = useState(false);
 
   // --- Init & Data Fetching ---
   useEffect(() => {
@@ -2020,6 +2024,7 @@ const App = () => {
   // --- Actions ---
   
   const handleLogin = async (email, password) => {
+    setActionLoading(true);
     try {
       const config = { headers: { 'Content-Type': 'application/json' } };
       const { data } = await axios.post(`${API_URL}/users/login`, { email, password }, config);
@@ -2034,10 +2039,13 @@ const App = () => {
       }
     } catch (err) {
       alert(err.response?.data?.message || 'Invalid email or password');
+    } finally {
+        setActionLoading(false);
     }
   };
 
   const handleRegister = async (name, email, password) => {
+    setActionLoading(true);
     try {
       const config = { headers: { 'Content-Type': 'application/json' } };
       const { data } = await axios.post(`${API_URL}/users`, { name, email, password }, config);
@@ -2047,6 +2055,8 @@ const App = () => {
       setCurrentPage('home');
     } catch (err) {
       alert(err.response?.data?.message || 'Registration failed');
+    } finally {
+        setActionLoading(false);
     }
   };
 
@@ -2147,7 +2157,7 @@ const App = () => {
         alert("You are not logged in or token is missing.");
         return;
     }
-
+    setActionLoading(true);
     try {
       const config = {
         headers: {
@@ -2164,6 +2174,8 @@ const App = () => {
             ? err.response.data.message 
             : err.message;
       alert(`Profile update failed: ${errorMessage}`);
+    } finally {
+        setActionLoading(false);
     }
   };
 
@@ -2250,6 +2262,7 @@ const App = () => {
   };
 
   const placeOrderHandler = async (order) => {
+    setActionLoading(true);
     try {
       const config = {
         headers: {
@@ -2267,10 +2280,13 @@ const App = () => {
         ? error.response.data.message
         : error.message;
       alert(`Order Failed: ${errorMessage}`);
+    } finally {
+        setActionLoading(false);
     }
   };
 
   const handlePay = async (orderId) => {
+    setActionLoading(true);
     try {
       const config = {
         headers: {
@@ -2290,6 +2306,8 @@ const App = () => {
     } catch (error) {
         console.error(error);
         alert('Payment Failed');
+    } finally {
+        setActionLoading(false);
     }
   };
 
@@ -2323,11 +2341,11 @@ const App = () => {
   const renderContent = () => {
     switch (currentPage) {
       case 'login': 
-        return <LoginPage handleLogin={handleLogin} setCurrentPage={setCurrentPage} />;
+        return <LoginPage handleLogin={handleLogin} setCurrentPage={setCurrentPage} loading={actionLoading} />;
       case 'signup': 
-        return <SignupPage handleRegister={handleRegister} setCurrentPage={setCurrentPage} />;
+        return <SignupPage handleRegister={handleRegister} setCurrentPage={setCurrentPage} loading={actionLoading} />;
       case 'profile':
-        return <ProfilePage user={user} handleUpdateProfile={handleUpdateProfile} setCurrentPage={setCurrentPage} />;
+        return <ProfilePage user={user} handleUpdateProfile={handleUpdateProfile} setCurrentPage={setCurrentPage} loading={actionLoading} />;
       case 'my-orders':
         return <MyOrdersPage user={user} setCurrentPage={setCurrentPage} handleOrderClick={handleOrderClick} />;
       case 'product-details': 
@@ -2339,9 +2357,9 @@ const App = () => {
       case 'payment':
         return <PaymentPage savePaymentMethod={savePaymentMethod} setCurrentPage={setCurrentPage} />;
       case 'placeorder':
-        return <PlaceOrderPage cart={cart} shippingAddress={shippingAddress} paymentMethod={paymentMethod} placeOrderHandler={placeOrderHandler} setCurrentPage={setCurrentPage} />;
+        return <PlaceOrderPage cart={cart} shippingAddress={shippingAddress} paymentMethod={paymentMethod} placeOrderHandler={placeOrderHandler} setCurrentPage={setCurrentPage} loading={actionLoading} />;
       case 'order-details':
-        return <OrderDetailsPage order={selectedOrder} handlePay={handlePay} setCurrentPage={setCurrentPage} />;
+        return <OrderDetailsPage order={selectedOrder} handlePay={handlePay} setCurrentPage={setCurrentPage} loading={actionLoading} />;
       case 'admin-dashboard': 
         return user?.isAdmin ? 
           <AdminDashboard products={products} orders={adminOrders} handleDeleteProduct={handleDeleteProduct} handleEditClick={handleEditClick} handleDeliverOrder={handleDeliverOrder} setCurrentPage={setCurrentPage} /> 
